@@ -3,15 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+# Sayfa Yapısı
 st.set_page_config(page_title="ACS Analysis Lab", layout="wide")
 
 st.title("Karar Verme ve Şut Gelişim Analizi")
 
-# Sidebar
+# Sidebar - Veri Girişi
 st.sidebar.header("📊 Veri Girişi")
 name = st.sidebar.text_input("Sporcu Adı", "İsim Soyisim")
 pos = st.sidebar.text_input("Pozisyon", "Guard / Kanat / Uzun")
 
+# Değişken isimlerini standartlaştırdım (i harfi kullanarak)
 mekanik = st.sidebar.slider("Mekanik Verimlilik", 1, 10, 5)
 karar = st.sidebar.slider("Karar Hızı", 1, 10, 5)
 denge = st.sidebar.slider("Dinamik Denge", 1, 10, 5)
@@ -32,8 +34,10 @@ with col1:
     st.info(f"**Antrenör Notu:** {notes}")
 
 with col2:
+    # Radar Grafiği Hazırlığı
     categories = ['Mekanik', 'Karar Hızı', 'Denge', 'Baskı', 'Okuma']
-    values = [mekanik, karar, denge, baskı, okuma]
+    # Burada 'baski' değişkenini 'i' ile kullanarak hatayı giderdik
+    values = [mekanik, karar, denge, baski, okuma]
     values += values[:1]
     angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
     angles += angles[:1]
@@ -43,7 +47,8 @@ with col2:
     ax.plot(angles, values, color='#ff6600', linewidth=2)
     ax.set_xticks(angles[:-1])
     ax.set_xticklabels(categories)
+    
     st.pyplot(fig)
 
 if st.button("Raporu Yazdır / PDF Yap"):
-    st.info("Ctrl+P yaparak PDF kaydedebilirsiniz.")
+    st.info("Tarayıcınızın Yazdır (Ctrl+P veya Cmd+P) özelliğini kullanarak raporu PDF olarak kaydedebilirsiniz.")
