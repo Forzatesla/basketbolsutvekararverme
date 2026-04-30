@@ -5,7 +5,7 @@ import pandas as pd
 
 st.set_page_config(page_title="ACS Analysis Lab", layout="wide")
 
-st.title("🏀 Karar Verme ve Şut Gelişim Analizi")
+st.title("Karar Verme ve Şut Gelişim Analizi")
 
 # Sidebar
 st.sidebar.header("📊 Veri Girişi")
