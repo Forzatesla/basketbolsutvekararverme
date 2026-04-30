@@ -11,7 +11,7 @@ st.title("Karar Verme ve Şut Gelişim Analizi")
 # Sidebar - Veri Girişi
 st.sidebar.header("📊 Veri Girişi")
 name = st.sidebar.text_input("Sporcu Adı", "İsim Soyisim")
-pos = st.sidebar.text_input("Pozisyon", "Guard / Kanat / Uzun")
+pos = st.sidebar.text_input("Pozisyon", "Guard / Forvet / Pivot")
 
 # Değişken isimlerini standartlaştırdım (i harfi kullanarak)
 mekanik = st.sidebar.slider("Mekanik Verimlilik", 1, 10, 5)
