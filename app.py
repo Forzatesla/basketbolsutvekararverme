@@ -89,18 +89,22 @@ with col2:
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
     
-    # Başlangıç Profili
+    # Başlangıç Profili (Gri)
     ax.plot(angles, plot_base, color='#777777', linewidth=1.5, linestyle='--', label='Başlangıç')
     ax.fill(angles, plot_base, color='#777777', alpha=0.1)
     
-    # Güncel Profil
+    # Güncel Profil (Turuncu)
     ax.plot(angles, plot_current, color='#ff6600', linewidth=3, label='Güncel')
     ax.fill(angles, plot_current, color='#ff6600', alpha=0.3)
     
     # --- SAYISAL DEĞERLERİ GRAFİĞE EKLEME ---
-    for angle, val in zip(angles[:-1], current_vals):
-        # Yazıları hafif dışarıya, siyah ve kalın şekilde ekliyoruz
-        ax.text(angle, val + 0.8, str(val), color='black', size=12, 
+    for angle, b_val, c_val in zip(angles[:-1], base_vals, current_vals):
+        # Başlangıç Değerleri (Gri, daha küçük, çizginin biraz altında)
+        ax.text(angle, b_val - 0.9, str(b_val), color='#777777', size=9, 
+                fontweight='normal', ha='center', va='center')
+        
+        # Güncel Değerler (Siyah, kalın, çizginin biraz üstünde)
+        ax.text(angle, c_val + 0.8, str(c_val), color='black', size=12, 
                 fontweight='bold', ha='center', va='center')
 
     # Grafik Süslemeleri
