@@ -39,7 +39,7 @@ with col_input1:
     k2 = st.number_input("Karar", 1, 10, 7, key="k2")
     d2 = st.number_input("Denge", 1, 10, 7, key="d2")
     b2 = st.number_input("Baskı", 1, 10, 7, key="b2")
-    o2 = st.number_input("Okuma", 1, 10, 7, key="o2")
+    o2 = st.number_input("Oyunu Okuma", 1, 10, 7, key="o2")
 
 with col_input2:
     st.write("**Başlangıç**")
@@ -47,7 +47,7 @@ with col_input2:
     k1 = st.number_input("Karar", 1, 10, 5, key="k1")
     d1 = st.number_input("Denge", 1, 10, 5, key="d1")
     b1 = st.number_input("Baskı", 1, 10, 5, key="b1")
-    o1 = st.number_input("Okuma", 1, 10, 5, key="o1")
+    o1 = st.number_input("Oyunu Okuma", 1, 10, 5, key="o1")
 
 notes = st.sidebar.text_area("Antrenör Notları", "Gelişim reçetesi...")
 
@@ -65,7 +65,7 @@ with col1:
 with col2:
     st.subheader("Gelişim Karşılaştırma Grafiği")
     
-    categories = ['Mekanik', 'Karar Hızı', 'Denge', 'Baskı', 'Okuma']
+    categories = ['Mekanik', 'Karar Hızı', 'Denge', 'Baskı', 'Oyunu Okuma']
     
     # Veri setlerinin hazırlanması
     current_vals = [m2, k2, d2, b2, o2]
