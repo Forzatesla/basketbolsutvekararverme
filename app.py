@@ -6,43 +6,56 @@ import pandas as pd
 # Sayfa Yapısı
 st.set_page_config(page_title="ACS Analysis Lab", layout="wide")
 
-# Gelişmiş CSS: Görünürlük ve Baskı Düzeni
+# Gelişmiş CSS: Baskı sırasında renkleri ve kontrastı zorla
 st.markdown("""
     <style>
-    /* 1. Görünürlük: Metinleri siyaha sabitle */
+    /* 1. Ekran Görünümü */
     .main { background-color: #ffffff !important; }
-    .main p, .main h1, .main h2, .main h3, .main h4, .main span, .main label {
-        color: #000000 !important;
-    }
     
-    /* 2. Buton Tasarımı */
+    /* 2. BASKI (PRINT) AYARLARI - Görseldeki siliklik sorununu çözer */
+    @media print {
+        /* Tüm metinleri istisnasız siyaha zorla */
+        h1, h2, h3, h4, p, span, div, label, .stMarkdown {
+            color: #000000 !important;
+            opacity: 1 !important;
+        }
+        
+        /* Mavi bilgi kutusunun (st.info) baskıda gri/beyaz çıkmasını engelle */
+        .stAlert {
+            background-color: #f0f2f6 !important;
+            color: #000000 !important;
+            border: 1px solid #000000 !important;
+        }
+
+        /* Gereksiz UI öğelerini gizle */
+        [data-testid="stSidebar"], 
+        header, 
+        footer, 
+        .stActionButton,
+        div.stButton,
+        [data-testid="stDecoration"] {
+            display: none !important;
+        }
+
+        /* Sayfa yerleşimi */
+        .main .block-container {
+            padding-top: 0rem !important;
+            margin-top: 0rem !important;
+        }
+        
+        @page {
+            size: auto;
+            margin: 10mm;
+        }
+    }
+
+    /* Buton tasarımı */
     div.stButton > button:first-child {
         width: 100%;
         background-color: #ff6600;
         color: white !important;
         border: none;
-        padding: 10px;
         font-weight: bold;
-    }
-
-    /* 3. Yazdırma (Baskı) Ayarları */
-    @media print {
-        [data-testid="stSidebar"], 
-        header, 
-        footer, 
-        .stActionButton,
-        div.stButton {
-            display: none !important;
-        }
-        
-        .main .block-container {
-            padding-top: 0rem !important;
-        }
-
-        @page {
-            size: auto;
-            margin: 15mm;
-        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -56,10 +69,8 @@ pos = st.sidebar.selectbox("Pozisyon", ["Guard", "Forvet", "Pivot"])
 
 st.sidebar.divider()
 st.sidebar.subheader("Gelişim Skorları (1-10)")
-st.sidebar.write("Turuncu: Güncel | Gri: Başlangıç")
 
 col_input1, col_input2 = st.sidebar.columns(2)
-
 with col_input1:
     st.write("**Güncel**")
     m2 = st.number_input("Mekanik", 1, 10, 7, key="m2")
@@ -87,6 +98,7 @@ with col1:
     st.write(f"**Pozisyon:** {pos}")
     st.write(f"**Analiz Tarihi:** {pd.Timestamp.now().strftime('%d/%m/%Y')}")
     st.divider()
+    # Bilgi kutusu içeriği
     st.info(f"**Teknik Değerlendirme:** {notes}")
 
 with col2:
@@ -119,20 +131,13 @@ with col2:
     
     st.pyplot(fig)
 
-# --- GÜNCELLENEN BUTON VE HATIRLATMA BÖLÜMÜ ---
 if st.button("Raporu PDF Kaydet / Yazdır"):
     st.markdown("---")
     st.subheader("İndirme Rehberi")
-    
-    col_pc, col_mob = st.columns(2)
-    with col_pc:
-        st.write("**💻 Bilgisayar Kullanıcıları**")
-        st.write("1. **Ctrl + P** (Windows) veya **Cmd + P** (Mac) tuşlarına basın.")
-        st.write("2. Hedef olarak **'PDF Olarak Kaydet'** seçin.")
-    
-    with col_mob:
-        st.write("**📱 Mobil Kullanıcılar**")
-        st.write("1. Tarayıcınızın **'Paylaş'** simgesine dokunun.")
-        st.write("2. Menüden **'Yazdır'** seçeneğini bulun.")
-        st.write("3. Önizleme ekranında **'PDF Olarak Kaydet'** diyerek indirin.")
-    st.warning("Not: En iyi görünüm için yazdırma ayarlarında 'Yatay (Landscape)' modunu seçebilirsiniz.")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.write("**💻 Bilgisayar**")
+        st.write("Ctrl+P tuşlayıp 'PDF Kaydet' seçin.")
+    with c2:
+        st.write("**📱 Mobil**")
+        st.write("Paylaş > Yazdır > PDF Kaydet yolunu izleyin.")
