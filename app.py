@@ -1,19 +1,22 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import numpy as np
+import plotly.graph_objects as go
 import pandas as pd
 
-# Sayfa Yapısı
+# Sayfa Yapısı - Mobil uyum için padding düzenlendi
 st.set_page_config(page_title="ACS Analysis Lab", layout="wide")
 
-# CSS ile sadeleştirme
 st.markdown("""
     <style>
-    .main { background-color: #ffffff; }
-    div.stButton > button:first-child {
-        background-color: #ff6600;
-        color: white;
-        border: none;
+    /* Mobil için butonları büyüt ve touch dostu yap */
+    div.stButton > button {
+        width: 100%;
+        height: 3em;
+        background-color: #ff6600 !important;
+        font-weight: bold;
+    }
+    /* Sidebar genişliğini mobil için optimize et */
+    [data-testid="stSidebar"] {
+        min-width: 320px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -23,77 +26,75 @@ st.title("Karar Verme ve Şut Gelişim Analizi")
 # Sidebar - Veri Girişi
 st.sidebar.header("Veri Girişi")
 name = st.sidebar.text_input("Sporcu Adı", "İsim Soyisim")
-# Pozisyonlar Guard / Forvet / Pivot olarak güncellendi
 pos = st.sidebar.selectbox("Pozisyon", ["Guard", "Forvet", "Pivot"])
 
 st.sidebar.divider()
-
-# Karşılaştırmalı Analiz için iki veri seti
 st.sidebar.subheader("Gelişim Skorları (1-10)")
-st.sidebar.write("Turuncu: Güncel | Gri: Başlangıç")
 
-col_input1, col_input2 = st.sidebar.columns(2)
+# Mobilde daha rahat giriş için alt alta düzen
+st.sidebar.write("**Güncel Skorlar**")
+m2 = st.sidebar.number_input("Mekanik (Güncel)", 1, 10, 7)
+k2 = st.sidebar.number_input("Karar (Güncel)", 1, 10, 7)
+d2 = st.sidebar.number_input("Denge (Güncel)", 1, 10, 7)
+b2 = st.sidebar.number_input("Baskı (Güncel)", 1, 10, 7)
+o2 = st.sidebar.number_input("Okuma (Güncel)", 1, 10, 7)
 
-with col_input1:
-    st.write("**Güncel**")
-    m2 = st.number_input("Mekanik", 1, 10, 7, key="m2")
-    k2 = st.number_input("Karar", 1, 10, 7, key="k2")
-    d2 = st.number_input("Denge", 1, 10, 7, key="d2")
-    b2 = st.number_input("Baskı", 1, 10, 7, key="b2")
-    o2 = st.number_input("Okuma", 1, 10, 7, key="o2")
+st.sidebar.divider()
+st.sidebar.write("**Başlangıç Skorları**")
+m1 = st.sidebar.number_input("Mekanik (Başlangıç)", 1, 10, 5)
+k1 = st.sidebar.number_input("Karar (Başlangıç)", 1, 10, 5)
+d1 = st.sidebar.number_input("Denge (Başlangıç)", 1, 10, 5)
+b1 = st.sidebar.number_input("Baskı (Başlangıç)", 1, 10, 5)
+o1 = st.sidebar.number_input("Okuma (Başlangıç)", 1, 10, 5)
 
-with col_input2:
-    st.write("**Başlangıç**")
-    m1 = st.number_input("Mekanik", 1, 10, 5, key="m1")
-    k1 = st.number_input("Karar", 1, 10, 5, key="k1")
-    d1 = st.number_input("Denge", 1, 10, 5, key="d1")
-    b1 = st.number_input("Baskı", 1, 10, 5, key="b1")
-    o1 = st.number_input("Okuma", 1, 10, 5, key="o1")
+notes = st.sidebar.text_area("Teknik Değerlendirme", "Gelişim reçetesi...")
 
-notes = st.sidebar.text_area("Antrenör Notları", "Gelişim reçetesi...")
-
-# Rapor Alanı
+# Ana Panel
 col1, col2 = st.columns([1, 1.2])
 
 with col1:
     st.subheader("Sporcu Profili")
-    st.write(f"**İsim:** {name}")
-    st.write(f"**Pozisyon:** {pos}")
-    st.write(f"**Analiz Tarihi:** {pd.Timestamp.now().strftime('%d/%m/%Y')}")
-    st.divider()
-    st.info(f"**Teknik Değerlendirme:** {notes}")
+    st.write(f"**İsim:** {name} | **Pozisyon:** {pos}")
+    st.write(f"**Tarih:** {pd.Timestamp.now().strftime('%d/%m/%Y')}")
+    st.info(f"**Notlar:** {notes}")
 
 with col2:
     st.subheader("Gelişim Karşılaştırma Grafiği")
     
     categories = ['Mekanik', 'Karar Hızı', 'Denge', 'Baskı', 'Okuma']
     
-    # Veri setleri
-    current_vals = [m2, k2, d2, b2, o2]
-    base_vals = [m1, k1, d1, b1, o1]
-    
-    # Döngü kapatma
-    current_vals += current_vals[:1]
-    base_vals += base_vals[:1]
-    angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
-    angles += angles[:1]
+    # Plotly Radar Chart (Mobil dostu ve interaktif)
+    fig = go.Figure()
 
-    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    fig.add_trace(go.Scatterpolar(
+          r=[m1, k1, d1, b1, o1, m1],
+          theta=categories + [categories[0]],
+          fill='toself',
+          name='Başlangıç',
+          line_color='#777777',
+          fillcolor='rgba(119, 119, 119, 0.1)'
+    ))
     
-    # Başlangıç Profili (Gri)
-    ax.plot(angles, base_vals, color='#777777', linewidth=1.5, linestyle='--', label='Başlangıç')
-    ax.fill(angles, base_vals, color='#777777', alpha=0.1)
-    
-    # Güncel Profil (Turuncu)
-    ax.plot(angles, current_vals, color='#ff6600', linewidth=2.5, label='Güncel')
-    ax.fill(angles, current_vals, color='#ff6600', alpha=0.3)
-    
-    ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, size=10)
-    ax.set_yticks([2, 4, 6, 8, 10])
-    ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
-    
-    st.pyplot(fig)
+    fig.add_trace(go.Scatterpolar(
+          r=[m2, k2, d2, b2, o2, m2],
+          theta=categories + [categories[0]],
+          fill='toself',
+          name='Güncel',
+          line_color='#ff6600',
+          fillcolor='rgba(255, 102, 0, 0.3)'
+    ))
 
-if st.button("Raporu Yazdır / PDF Kaydet"):
-    st.info("Ctrl+P yaparak bu analizi PDF olarak kaydedebilirsiniz.")
+    fig.update_layout(
+      polar=dict(
+        radialaxis=dict(visible=True, range=[0, 10])
+      ),
+      showlegend=True,
+      margin=dict(l=40, r=40, t=20, b=20), # Mobil kenar boşlukları
+      paper_bgcolor='rgba(0,0,0,0)',
+      plot_bgcolor='rgba(0,0,0,0)'
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+if st.button("Raporu PDF Kaydet"):
+    st.info("Mobil cihazınızda 'Paylaş > Yazdır' diyerek PDF olarak kaydedebilirsiniz.")
