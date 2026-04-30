@@ -6,14 +6,43 @@ import pandas as pd
 # Sayfa Yapısı
 st.set_page_config(page_title="ACS Analysis Lab", layout="wide")
 
-# CSS ile sadeleştirme (Temiz ve profesyonel görünüm)
+# Gelişmiş CSS: Görünürlük ve Baskı Düzeni
 st.markdown("""
     <style>
-    .main { background-color: #ffffff; }
+    /* 1. Görünürlük: Metinleri siyaha sabitle */
+    .main { background-color: #ffffff !important; }
+    .main p, .main h1, .main h2, .main h3, .main h4, .main span, .main label {
+        color: #000000 !important;
+    }
+    
+    /* 2. Buton Tasarımı */
     div.stButton > button:first-child {
+        width: 100%;
         background-color: #ff6600;
-        color: white;
+        color: white !important;
         border: none;
+        padding: 10px;
+        font-weight: bold;
+    }
+
+    /* 3. Yazdırma (Baskı) Ayarları */
+    @media print {
+        [data-testid="stSidebar"], 
+        header, 
+        footer, 
+        .stActionButton,
+        div.stButton {
+            display: none !important;
+        }
+        
+        .main .block-container {
+            padding-top: 0rem !important;
+        }
+
+        @page {
+            size: auto;
+            margin: 15mm;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -26,8 +55,6 @@ name = st.sidebar.text_input("Sporcu Adı", "İsim Soyisim")
 pos = st.sidebar.selectbox("Pozisyon", ["Guard", "Forvet", "Pivot"])
 
 st.sidebar.divider()
-
-# Karşılaştırmalı Analiz Giriş Alanları
 st.sidebar.subheader("Gelişim Skorları (1-10)")
 st.sidebar.write("Turuncu: Güncel | Gri: Başlangıç")
 
@@ -66,35 +93,46 @@ with col2:
     st.subheader("Gelişim Karşılaştırma Grafiği")
     
     categories = ['Mekanik', 'Karar Hızı', 'Denge', 'Devamlılık', 'Oyunu Okuma']
-    
-    # Veri setlerinin hazırlanması
     current_vals = [m2, k2, d2, b2, o2]
     base_vals = [m1, k1, d1, b1, o1]
     
-    # Radar grafiği için döngüyü kapatma
     current_vals += current_vals[:1]
     base_vals += base_vals[:1]
     angles = np.linspace(0, 2 * np.pi, len(categories), endpoint=False).tolist()
     angles += angles[:1]
 
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
     
-    # Başlangıç Profili (Gri - Kesikli Çizgi)
     ax.plot(angles, base_vals, color='#777777', linewidth=1.5, linestyle='--', label='Başlangıç')
     ax.fill(angles, base_vals, color='#777777', alpha=0.1)
     
-    # Güncel Profil (Turuncu - Kalın Çizgi)
     ax.plot(angles, current_vals, color='#ff6600', linewidth=2.5, label='Güncel')
     ax.fill(angles, current_vals, color='#ff6600', alpha=0.3)
     
-    # Grafik Ayarları
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, size=10)
+    ax.set_xticklabels(categories, size=10, color='black')
     ax.set_yticks([2, 4, 6, 8, 10])
+    ax.tick_params(colors='black')
     ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.1))
     
     st.pyplot(fig)
 
-if st.button("Raporu PDF Kaydet"):
-    st.info(" Mobil kullanıcılar: Tarayıcınızın 'Paylaş' menüsünden 'Yazdır'ı seçip 'Yatay' modda kaydediniz.")
-    st.warning(" Masaüstü kullanıcılar: Ctrl+P ile kaydedebilir.")
+# --- GÜNCELLENEN BUTON VE HATIRLATMA BÖLÜMÜ ---
+if st.button("Raporu PDF Kaydet / Yazdır"):
+    st.markdown("---")
+    st.subheader("İndirme Rehberi")
+    
+    col_pc, col_mob = st.columns(2)
+    with col_pc:
+        st.write("**💻 Bilgisayar Kullanıcıları**")
+        st.write("1. **Ctrl + P** (Windows) veya **Cmd + P** (Mac) tuşlarına basın.")
+        st.write("2. Hedef olarak **'PDF Olarak Kaydet'** seçin.")
+    
+    with col_mob:
+        st.write("**📱 Mobil Kullanıcılar**")
+        st.write("1. Tarayıcınızın **'Paylaş'** simgesine dokunun.")
+        st.write("2. Menüden **'Yazdır'** seçeneğini bulun.")
+        st.write("3. Önizleme ekranında **'PDF Olarak Kaydet'** diyerek indirin.")
+    st.warning("Not: En iyi görünüm için yazdırma ayarlarında 'Yatay (Landscape)' modunu seçebilirsiniz.")
