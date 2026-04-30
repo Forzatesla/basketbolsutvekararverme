@@ -95,5 +95,6 @@ with col2:
     
     st.pyplot(fig)
 
-if st.button("Raporu Yazdır / PDF Kaydet"):
-    st.info("Bu sayfayı PDF olarak kaydetmek için Ctrl+P (Windows) veya Cmd+P (Mac) komutunu kullanabilirsiniz.")
+if st.button("Raporu PDF Kaydet"):
+    st.info(" Mobil kullanıcılar: Tarayıcınızın 'Paylaş' menüsünden 'Yazdır'ı seçip 'Yatay' modda kaydediniz.")
+    st.warning(" Masaüstü kullanıcılar: Ctrl+P ile kaydedebilir.")
